@@ -13,16 +13,16 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral]]></description>
         <assignment actor-id="#{actor.id}"/>
     </swimlane>
     <swimlane name="Secretaria">
-        <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('602:1338,602:5483,602:5906,8:1338,8:5483,8:5906')}" actor-id="#{actor.id}"/>
+        <assignment pooled-actors="#{localizacaoAssignment.getPooledActors('602:1338,602:5483,602:5906')}" actor-id="#{actor.id}"/>
     </swimlane>  
     <!-- START-STATE -->
     <start-state name="Início">
-        <task name="Tarefa inicial" swimlane="Secretaria"/>
+        <task name="Tarefa inicial" swimlane="Secretaria" priority="3"/>
         <transition to="(SG) Encaminhamento para outro gabinete - ENCAMINHAR" name="(SG) Encaminhamento para outro gabinete - ENCAMINHAR"/>
     </start-state>  
     <!-- NODES -->
     <task-node end-tasks="true" name="(SG) Encaminhamento para outro gabinete - ENCAMINHAR">
-        <task name="(SG) Encaminhamento para outro gabinete - ENCAMINHAR" swimlane="Secretaria"/>
+        <task name="(SG) Encaminhamento para outro gabinete - ENCAMINHAR" swimlane="Secretaria" priority="3"/>
         <transition to="Nó de Desvio - (SG) Encaminhamento para outro gabinete" name="Nó de Desvio - (SG) Encaminhamento para outro gabinete">
             <condition expression="#{true}"/>
         </transition>
@@ -151,6 +151,7 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral]]></description>
         <transition to="(SG) Encaminhar para CCrGab3" name="Encaminhar para Gab. Des. Glauber Rêgo na Câmara Criminal">
             <condition expression="#{orgaoJulgadorManager.orgaosPorColegiado(authenticator.getOrgaoJulgadorColegiadoAtual()).contains(orgaoJulgadorService.findById(51))}"/>
         </transition>
+        <transition to="(SG) Encaminhar para PlenoGab15" name="Encaminhar para Gab. Des.Expedito Ferreira no Pleno"/>
         <event type="task-end">
             <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:encgab:idOjcOrigem', tramitacaoProcessualService.recuperaProcesso().orgaoJulgadorColegiado.idOrgaoJulgadorColegiado)}"/>
             <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:encgab:idOjOrigem', tramitacaoProcessualService.recuperaProcesso().orgaoJulgador.idOrgaoJulgador)}"/>
@@ -366,6 +367,14 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral]]></description>
             <action expression="#{processoJudicialService.deslocarOrgaoJulgador(tramitacaoProcessualService.recuperaProcesso(),28,8,30,false)}"/>
         </event>
     </node>
+    <node name="(SG) Encaminhar para PlenoGab15">
+        <transition to="(SG) Registrar movimentação de remessa" name="(SG) Registrar movimentação de remessa"/>
+        <event type="node-enter">
+            <action expression="#{tramitacaoProcessualService.gravaVariavel('sg:encgab:OrgJulgadorDestino', 'Gab. Des. Expedito Ferreira no Pleno') }"/>
+            <action expression="#{tramitacaoProcessualService.deslocarFluxoParaOrgaoDiverso(tramitacaoProcessualService.recuperaProcesso().idProcessoTrf, 68, 126, 8)}"/>
+            <action expression="#{processoJudicialService.deslocarOrgaoJulgador(tramitacaoProcessualService.recuperaProcesso(),68,8,126,false)}"/>
+        </event>
+    </node>
     <node name="(SG) Encaminhar para SCvGab01">
         <transition to="(SG) Registrar movimentação de remessa" name="(SG) Registrar movimentação de remessa"/>
         <event type="node-enter">
@@ -527,7 +536,7 @@ Secretaria  Secretaria Segundo Grau  Servidor Geral]]></description>
         </event>
     </end-state>
     <task-node end-tasks="true" name="Nó de Desvio - (SG) Encaminhamento para outro gabinete">
-        <task name="Nó de Desvio - (SG) Encaminhamento para outro gabinete" swimlane="Nó de Desvio - (SG) Encaminhamento para outro gabinete"/>
+        <task name="Nó de Desvio - (SG) Encaminhamento para outro gabinete" swimlane="Nó de Desvio - (SG) Encaminhamento para outro gabinete" priority="3"/>
         <transition to="Término" name="Término"/>
         <transition to="(SG) Encaminhamento para outro gabinete - ENCAMINHAR" name="(SG) Encaminhamento para outro gabinete - ENCAMINHAR"/>
     </task-node>  
